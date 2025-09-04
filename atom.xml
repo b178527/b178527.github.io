@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://example.com</id>
-    <title>半清安&#39;blog</title>
-    <subtitle>记录学习生活</subtitle>
+    <title>我的学习笔记</title>
+    <subtitle>hazysec</subtitle>
     <icon>http://example.com/images/favicon.ico</icon>
     <link href="http://example.com" />
     <author>
