@@ -1,4 +1,4 @@
-var posts=["728d0100c79c/","5ac32811adb9/","651cb7fa30c0/","1c4a5286cf6d/"];function toRandomPost(){
+var posts=["1c4a5286cf6d/","728d0100c79c/","651cb7fa30c0/","5ac32811adb9/"];function toRandomPost(){
     pjax.loadUrl('/'+posts[Math.floor(Math.random() * posts.length)]);
   };var friend_link_list=[{"name":["网站名称 1"],"link":["网站地址 1"],"avatar":["网站头像 1"],"descr":["网站描述 1"]},{"name":["网站名称 2"],"link":["网站地址 2"],"avatar":["网站头像 2"],"descr":["网站描述 2"]}];
     var refreshNum = 1;
