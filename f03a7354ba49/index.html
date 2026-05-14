@@ -204,19 +204,19 @@
 
 <p>等待安装，它会自动检测运行环境并下载安装。</p>
 <h2 id="三、快速安装"><a href="#三、快速安装" class="headerlink" title="三、快速安装"></a>三、快速安装</h2><p>第一步，选择快速安装 Quick Setup（推荐新手选这个，省事）：</p>
-<p>![1](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;1.png)</p>
+<p>![1](\images\教程\Hermes Agent 搭建教程\1.png)</p>
 <h2 id="四、配置-API-接口"><a href="#四、配置-API-接口" class="headerlink" title="四、配置 API 接口"></a>四、配置 API 接口</h2><p>第二步，配置 API 接口。这里需要选择一个 AI 模型服务商作为 Hermes 的大脑。</p>
 <h3 id="选择服务商"><a href="#选择服务商" class="headerlink" title="选择服务商"></a>选择服务商</h3><p>这里我选择 15 配置 DeepSeek，也可以选择 38 跳过待会再设置。</p>
-<p>![2](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;2.png)</p>
+<p>![2](\images\教程\Hermes Agent 搭建教程\2.png)</p>
 <h3 id="填写-Key-和模型"><a href="#填写-Key-和模型" class="headerlink" title="填写 Key 和模型"></a>填写 Key 和模型</h3><p>输入 DeepSeek 的 API Key，输入的 Key 是隐藏的，粘贴后直接回车即可。之后 Base URL 默认回车，模型选择 3（deepseek-v4-flash）。</p>
-<p>![3](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;3.png)</p>
+<p>![3](\images\教程\Hermes Agent 搭建教程\3.png)</p>
 <blockquote>
 <p>为什么选 DeepSeek？国内可用、速度快、价格便宜，v4-flash 模型响应很快，日常聊天和查资料完全够用。</p>
 </blockquote>
 <h2 id="五、配置-Embedding"><a href="#五、配置-Embedding" class="headerlink" title="五、配置 Embedding"></a>五、配置 Embedding</h2><p>第三步，这里直接默认 8，回车。</p>
-<p>![4](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;4.png)</p>
+<p>![4](\images\教程\Hermes Agent 搭建教程\4.png)</p>
 <h2 id="六、跳过-Gateway-配置"><a href="#六、跳过-Gateway-配置" class="headerlink" title="六、跳过 Gateway 配置"></a>六、跳过 Gateway 配置</h2><p>最后一步配置 Gateway。这里先选择 2 跳过，待会再配置。先测试Hermes通信是否正常，Gateway 是用来连接微信的，后面单独处理会更清晰。</p>
-<p>![5](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;5.png)</p>
+<p>![5](\images\教程\Hermes Agent 搭建教程\5.png)</p>
 <h2 id="七、重载-Shell"><a href="#七、重载-Shell" class="headerlink" title="七、重载 Shell"></a>七、重载 Shell</h2><p>安装完成后无法直接使用 Hermes 命令，因为 Shell 还没有加载新添加的路径，需要重加载：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
 
@@ -227,31 +227,31 @@
 <h2 id="八、测试-Hermes-通信"><a href="#八、测试-Hermes-通信" class="headerlink" title="八、测试 Hermes 通信"></a>八、测试 Hermes 通信</h2><p>配置好 API Key 后，先测试一下 Hermes 能否正常通信。打开 Hermes 控制台终端：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes</span><br></pre></td></tr></table></figure>
 
-<p>![6](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;6.png)</p>
+<p>![6](\images\教程\Hermes Agent 搭建教程\6.png)</p>
 <p>随便发条消息试试，比如打个招呼。能正常回复就说明安装配置都成功了。Ctrl + C 退出。</p>
 <h2 id="九、连接微信"><a href="#九、连接微信" class="headerlink" title="九、连接微信"></a>九、连接微信</h2><p>接下来是重头戏——让 Hermes 成为你的微信好友。</p>
 <h3 id="启动配置"><a href="#启动配置" class="headerlink" title="启动配置"></a>启动配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway setup</span><br></pre></td></tr></table></figure>
 
 <h3 id="选择平台"><a href="#选择平台" class="headerlink" title="选择平台"></a>选择平台</h3><p>选择 Weixin &#x2F; Wechat：</p>
-<p>![7](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;7.png)</p>
+<p>![7](\images\教程\Hermes Agent 搭建教程\7.png)</p>
 <h3 id="扫码登录"><a href="#扫码登录" class="headerlink" title="扫码登录"></a>扫码登录</h3><p>回车后会出现一个链接。因为终端无法直接渲染二维码，复制这个链接到浏览器打开，用手机微信扫描二维码即可登录。</p>
 <blockquote>
 <p>二维码有效期有限，尽量在生成后尽快扫码。</p>
 </blockquote>
-<p>![8](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;8.png)</p>
+<p>![8](\images\教程\Hermes Agent 搭建教程\8.png)</p>
 <h3 id="完成配置"><a href="#完成配置" class="headerlink" title="完成配置"></a>完成配置</h3><p>扫码成功后回到终端，全部默认回车，直到 Done 配置完成：</p>
-<p>![9](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;9.png)</p>
-<p>![10](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;10.png)</p>
+<p>![9](\images\教程\Hermes Agent 搭建教程\9.png)</p>
+<p>![10](\images\教程\Hermes Agent 搭建教程\10.png)</p>
 <h2 id="十、启动服务"><a href="#十、启动服务" class="headerlink" title="十、启动服务"></a>十、启动服务</h2><p>继续回车，安装服务：</p>
-<p>![11](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;11.png)</p>
+<p>![11](\images\教程\Hermes Agent 搭建教程\11.png)</p>
 <h3 id="选择启动方式"><a href="#选择启动方式" class="headerlink" title="选择启动方式"></a>选择启动方式</h3><p>如果是电脑本地运行，可以选择第一个（手动启动），每次需要用时再开启。需要开机自动启动服务就选择第二个（需要 sudo 权限），适合部署在云服务器上长期运行。</p>
-<p>![12](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;12.png)</p>
+<p>![12](\images\教程\Hermes Agent 搭建教程\12.png)</p>
 <p>之后回车开启服务。</p>
 <h2 id="十一、微信配对验证"><a href="#十一、微信配对验证" class="headerlink" title="十一、微信配对验证"></a>十一、微信配对验证</h2><p>现在还没有做配对验证，Hermes 还不能直接跟你聊天。</p>
 <h3 id="发送消息获取配对码"><a href="#发送消息获取配对码" class="headerlink" title="发送消息获取配对码"></a>发送消息获取配对码</h3><p>回到微信，随便发一条消息给 Hermes，会收到类似这样的回复：</p>
-<p>![13](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;13.png)</p>
+<p>![13](\images\教程\Hermes Agent 搭建教程\13.png)</p>
 <h3 id="执行配对命令"><a href="#执行配对命令" class="headerlink" title="执行配对命令"></a>执行配对命令</h3><p>这条回复里包含一条配对命令，复制它到终端执行：</p>
-<p>![14](&#x2F;images&#x2F;教程&#x2F;Hermes Agent 搭建教程&#x2F;14.png)</p>
+<p>![14](\images\教程\Hermes Agent 搭建教程\14.png)</p>
 <p>出现 Approved 说明配对成功。再发一条消息给 Hermes，它就会正常回复了。</p>
 <hr>
 <p>至此，你的微信 AI 助手已经正式上线 🎉</p>
