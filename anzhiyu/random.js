@@ -1,3 +1,3 @@
-var posts=["5ac32811adb9/","f03a7354ba49/","728d0100c79c/","1c4a5286cf6d/","651cb7fa30c0/"];function toRandomPost(){
+var posts=["728d0100c79c/","651cb7fa30c0/","5ac32811adb9/","1c4a5286cf6d/","f03a7354ba49/"];function toRandomPost(){
     pjax.loadUrl('/'+posts[Math.floor(Math.random() * posts.length)]);
   };
