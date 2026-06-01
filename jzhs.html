@@ -1,0 +1,1420 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏯 南京·上海·杭州 十日游</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #4ca1af;
+            --primary-dark: #2c3e50;
+            --nj: #c0392b;
+            --sh: #e91e63;
+            --hz: #2e7d32;
+            --bg: #f5f7fa;
+            --card-bg: #fff;
+            --text: #333;
+            --text-light: #888;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --border: #eee;
+            --tag-bg: #eef2ff;
+            --cost-bg: #f5f5f5;
+            --summer-start: #ff6f00;
+            --summer-end: #f57c00;
+        }
+        /* ===== 暗黑模式 ===== */
+        [data-theme="dark"] {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #e0e0e0;
+            --text-light: #999;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --border: #333;
+            --tag-bg: #2a2a4a;
+            --cost-bg: #2a2a2a;
+        }
+        [data-theme="dark"] .tab-btn.active { color: #fff; background: var(--primary-dark); }
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .route-graph,
+        [data-theme="dark"] .progress-bar,
+        [data-theme="dark"] .accordion,
+        [data-theme="dark"] .day-card,
+        [data-theme="dark"] .food-city,
+        [data-theme="dark"] .budget-card,
+        [data-theme="dark"] .tip-card,
+        [data-theme="dark"] .pack-card,
+        [data-theme="dark"] .bottom-nav,
+        [data-theme="dark"] .budget-toggle button { background: var(--card-bg); }
+        [data-theme="dark"] .day-body .spots .spot { background: var(--tag-bg); color: var(--text); }
+        [data-theme="dark"] .day-body .cost { background: var(--cost-bg); }
+        [data-theme="dark"] .accordion-body .item { background: #2a2a2a; }
+        [data-theme="dark"] .nav-item { color: #666; }
+        [data-theme="dark"] .nav-item.active { color: var(--primary); }
+        body {
+            background: var(--bg);
+            font-family: 'PingFang SC','Microsoft YaHei','STHeiti',sans-serif;
+            color: var(--text);
+            padding: 0 0 70px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== 滚动进度条 ===== */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 999;
+            background: linear-gradient(90deg, var(--summer-start), var(--summer-end));
+            width: 0%; transition: width 0.1s;
+        }
+
+        /* ===== 顶部导航 Tab ===== */
+        .top-bar .summer-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 2px 12px; border-radius: 20px;
+            font-size: 11px; margin-bottom: 4px;
+        }
+        .top-bar {
+            position: sticky; top: 0; z-index: 100;
+            background: linear-gradient(135deg, #e65100, #ff8f00);
+            color: #fff;
+            padding: 14px 16px 6px;
+            text-align: center;
+        }
+        .top-bar h1 {
+            font-size: 20px; letter-spacing: 2px; margin-bottom: 6px;
+        }
+        .top-bar .sub {
+            font-size: 12px; opacity: 0.8; margin-bottom: 8px;
+        }
+        .tab-bar {
+            display: flex; gap: 2px; overflow-x: auto;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            flex-shrink: 0; padding: 8px 14px;
+            font-size: 13px; border: none; border-radius: 20px;
+            background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);
+            cursor: pointer; transition: all 0.3s; white-space: nowrap;
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            background: #fff; color: #e65100;
+            font-weight: bold; box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .tab-btn:active { transform: scale(0.95); }
+
+        /* ===== 页面容器 ===== */
+        .page {
+            display: none; padding: 16px; max-width: 640px; margin: 0 auto;
+            animation: fadeUp 0.4s ease;
+        }
+        .page.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 总览页 ===== */
+        .hero-card {
+            background: linear-gradient(135deg, #e65100, #ff8f00);
+            border-radius: 20px; padding: 24px 20px; color: #fff;
+            margin-bottom: 16px; text-align: center;
+        }
+        .hero-card .summer-icon { font-size: 40px; margin-bottom: 6px; }
+        .hero-card h2 { font-size: 22px; margin-bottom: 4px; }
+        .hero-card .route { font-size: 15px; opacity: 0.9; letter-spacing: 4px; }
+        .hero-card .temp { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+
+        .stats {
+            display: grid; grid-template-columns: repeat(2,1fr); gap: 10px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: var(--card-bg); border-radius: 16px;
+            padding: 16px; text-align: center;
+            box-shadow: var(--shadow); transition: transform 0.2s;
+        }
+        .stat-card:active { transform: scale(0.96); }
+        .stat-card .icon { font-size: 28px; }
+        .stat-card .num { font-size: 20px; font-weight: bold; margin: 4px 0 2px; }
+        .stat-card .num.nj { color: var(--nj); }
+        .stat-card .num.sh { color: var(--sh); }
+        .stat-card .num.hz { color: var(--hz); }
+        .stat-card .label { font-size: 12px; color: var(--text-light); }
+
+        .route-graph {
+            background: var(--card-bg); border-radius: 16px;
+            padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
+        }
+        .route-graph h3 { font-size: 16px; margin-bottom: 12px; text-align: center; }
+        .route-steps {
+            display: flex; align-items: center; justify-content: space-between;
+            position: relative; padding: 8px 0;
+        }
+        .route-steps::before {
+            content: ""; position: absolute; top: 30px; left: 15%; right: 15%;
+            height: 3px; background: linear-gradient(90deg, var(--nj), var(--sh), var(--hz));
+            border-radius: 2px;
+        }
+        .route-node {
+            text-align: center; position: relative; z-index: 1;
+            flex: 1; cursor: pointer; transition: transform 0.2s;
+        }
+        .route-node:active { transform: scale(0.9); }
+        .route-node .dot {
+            width: 44px; height: 44px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 20px; margin: 0 auto 6px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .route-node .dot.nj { background: #ffdcdc; }
+        .route-node .dot.sh { background: #fce4ec; }
+        .route-node .dot.hz { background: #e8f5e9; }
+        .route-node .name { font-size: 13px; font-weight: bold; }
+        .route-node .days { font-size: 11px; color: var(--text-light); }
+        .route-node .arrow { font-size: 18px; color: var(--text-light); }
+
+        /* ===== 城市页眉 ===== */
+        .city-hero {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 18px; border-radius: 18px; margin-bottom: 14px;
+        }
+        .city-hero .icon { font-size: 36px; }
+        .city-hero .info h2 { font-size: 20px; }
+        .city-hero .info p { font-size: 13px; opacity: 0.7; }
+        .city-hero.nj-bg { background: linear-gradient(135deg,#ffdcdc,#ffe0e0); }
+        .city-hero.sh-bg { background: linear-gradient(135deg,#fce4ec,#f8bbd0); }
+        .city-hero.hz-bg { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); }
+
+        /* ===== 住宿折叠 ===== */
+        .accordion {
+            background: var(--card-bg); border-radius: 14px;
+            box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden;
+            transition: background 0.3s;
+        }
+        .accordion-header {
+            padding: 14px 16px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            font-size: 15px; font-weight: bold; transition: background 0.2s;
+            user-select: none;
+        }
+        .accordion-header:active { background: #f5f5f5; }
+        .accordion-header .arrow {
+            transition: transform 0.3s; font-size: 14px;
+        }
+        .accordion-header.open .arrow { transform: rotate(180deg); }
+        .accordion-body {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            padding: 0 16px;
+        }
+        .accordion-body.open {
+            max-height: 600px; padding: 0 16px 14px;
+        }
+        .accordion-body .grid {
+            display: grid; grid-template-columns: 1fr; gap: 8px;
+        }
+        .accordion-body .item {
+            background: #f8f9ff; border-radius: 10px; padding: 10px 14px;
+            font-size: 14px;
+        }
+        .accordion-body .item b { display: block; color: var(--primary); }
+        .accordion-body .item .price { color: #e91e63; font-weight: bold; }
+
+        /* ===== 每日卡片（带勾选） ===== */
+        .day-card {
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .day-card.completed { opacity: 0.7; }
+        .day-card.completed .day-header .theme { text-decoration: line-through; }
+
+        .day-header {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px; cursor: pointer; user-select: none;
+            transition: background 0.2s;
+        }
+        .day-header:active { background: #f9f9f9; }
+
+        .day-check {
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid #ddd; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 14px; color: #fff; flex-shrink: 0;
+            transition: all 0.3s; cursor: pointer;
+        }
+        .day-check.checked { background: #4caf50; border-color: #4caf50; }
+
+        .day-header .day-label { flex-shrink: 0; text-align: center; }
+        .day-header .day-label .d { font-size: 16px; font-weight: bold; color: var(--primary-dark); }
+        .day-header .day-label .w { font-size: 10px; color: var(--text-light); }
+
+        .day-header .theme { flex: 1; font-size: 15px; font-weight: bold; }
+        .day-header .city-tag {
+            font-size: 11px; padding: 2px 10px; border-radius: 20px;
+            color: #fff; flex-shrink: 0;
+        }
+        .day-header .city-tag.nj { background: var(--nj); }
+        .day-header .city-tag.sh { background: var(--sh); }
+        .day-header .city-tag.hz { background: var(--hz); }
+        .day-header .expand-icon {
+            font-size: 14px; color: #ccc; transition: transform 0.3s;
+        }
+        .day-header.open .expand-icon { transform: rotate(180deg); }
+
+        .day-body {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            padding: 0 16px;
+        }
+        .day-body.open { max-height: 600px; padding: 0 16px 16px; }
+
+        .day-body .spots { font-size: 14px; line-height: 1.7; margin-bottom: 6px; }
+        .day-body .spots .spot {
+            display: inline-block; background: #eef2ff; border-radius: 12px;
+            padding: 3px 12px; margin: 2px; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; user-select: none;
+        }
+        .day-body .spots .spot.done {
+            background: #c8e6c9; text-decoration: line-through; opacity: 0.6;
+        }
+        [data-theme="dark"] .day-body .spots .spot.done { background: #2e7d32; }
+        .day-body .spots .spot:active { transform: scale(0.9); }
+
+        .day-body .summer-tip {
+            font-size: 12px; color: #e65100; margin: 4px 0;
+            padding: 4px 10px; background: #fff3e0; border-radius: 8px;
+            display: inline-block;
+        }
+        .day-body .food { font-size: 13px; color: #e65100; }
+        .day-body .food span {
+            background: #fff8e1; padding: 2px 10px; border-radius: 12px;
+            display: inline-block; margin: 2px; font-size: 13px;
+        }
+        .day-body .cost {
+            font-size: 12px; color: var(--text-light); margin-top: 6px;
+            padding: 6px 10px; background: #f5f5f5; border-radius: 10px;
+        }
+
+        /* ===== 进度条 ===== */
+        .progress-bar {
+            background: var(--card-bg); border-radius: 14px;
+            padding: 14px 16px; box-shadow: var(--shadow); margin-bottom: 14px;
+        }
+        .progress-bar .label {
+            display: flex; justify-content: space-between;
+            font-size: 13px; margin-bottom: 6px;
+        }
+        .progress-bar .track {
+            height: 8px; background: #eee; border-radius: 4px; overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%; background: linear-gradient(90deg, var(--summer-start), var(--summer-end));
+            border-radius: 4px; transition: width 0.6s ease;
+        }
+
+        /* ===== 美食页 ===== */
+        .food-grid {
+            display: grid; grid-template-columns: 1fr; gap: 12px;
+        }
+        .food-city {
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); overflow: hidden;
+            transition: background 0.3s;
+        }
+        .food-city .header {
+            padding: 14px 16px; font-size: 16px; font-weight: bold; color: #fff;
+        }
+        .food-city .header.nj { background: var(--nj); }
+        .food-city .header.sh { background: var(--sh); }
+        .food-city .header.hz { background: var(--hz); }
+        .food-city .list { padding: 12px 16px; }
+        .food-city .list .item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px dashed #eee;
+        }
+        .food-city .list .item:last-child { border-bottom: none; }
+        .food-city .list .item .name { font-size: 14px; }
+        .food-city .list .item .tag {
+            font-size: 10px; padding: 1px 8px; border-radius: 10px;
+            background: #fff3e0; color: #e65100; margin-left: 6px;
+        }
+        .food-city .list .item .like {
+            color: #ff6b6b; cursor: pointer; font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .food-city .list .item .like:active { transform: scale(1.3); }
+        .food-city .list .item .like.liked { animation: heartPop 0.4s ease; }
+        @keyframes heartPop {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+
+        /* ===== 预算页 ===== */
+        .budget-card {
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); padding: 20px; margin-bottom: 14px;
+            transition: background 0.3s;
+        }
+        .budget-card h3 { font-size: 16px; margin-bottom: 12px; }
+        .budget-item {
+            display: flex; justify-content: space-between; padding: 8px 0;
+            border-bottom: 1px dashed #f0f0f0; font-size: 14px;
+        }
+        .budget-item:last-child { border-bottom: none; }
+        .budget-item .val { font-weight: bold; }
+
+        .budget-total {
+            display: flex; justify-content: space-between;
+            padding: 12px 0 0; margin-top: 8px;
+            border-top: 2px solid var(--primary); font-size: 16px;
+        }
+        .budget-total .val { color: #c0392b; font-size: 20px; }
+
+        .budget-toggle {
+            display: flex; gap: 8px; margin-bottom: 12px;
+        }
+        .budget-toggle button {
+            flex: 1; padding: 8px; border: 2px solid #eee;
+            border-radius: 12px; background: var(--card-bg);
+            font-size: 13px; cursor: pointer; transition: all 0.2s;
+            font-family: inherit;
+        }
+        .budget-toggle button.active {
+            border-color: var(--primary); background: #e3f2fd;
+            font-weight: bold;
+        }
+        .budget-toggle button:active { transform: scale(0.95); }
+
+        /* ===== 贴士页 ===== */
+        .tip-card {
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); padding: 16px 20px; margin-bottom: 12px;
+            cursor: pointer; transition: all 0.2s; user-select: none;
+        }
+        .tip-card:active { transform: scale(0.98); }
+        .tip-card .emoji { font-size: 24px; margin-bottom: 4px; }
+        .tip-card h4 { font-size: 15px; margin-bottom: 4px; }
+        .tip-card p { font-size: 13px; color: #666; line-height: 1.6; }
+
+        /* ===== 行李清单页 ===== */
+        .pack-card {
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); padding: 16px 20px; margin-bottom: 12px;
+            transition: background 0.3s;
+        }
+        .pack-card h3 { font-size: 16px; margin-bottom: 10px; }
+        .pack-card h3 span { font-size: 13px; color: var(--text-light); font-weight: normal; }
+        .pack-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; border-bottom: 1px dashed var(--border);
+            font-size: 14px; cursor: pointer; user-select: none;
+        }
+        .pack-item:last-child { border-bottom: none; }
+        .pack-item .box {
+            width: 20px; height: 20px; border-radius: 4px;
+            border: 2px solid #ccc; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; font-size: 12px; color: #fff;
+        }
+        .pack-item .box.done { background: #4caf50; border-color: #4caf50; }
+        .pack-item .label { flex: 1; }
+        .pack-item .label.done { text-decoration: line-through; opacity: 0.5; }
+        .pack-item .qty { font-size: 11px; color: var(--text-light); }
+        .pack-progress { height: 4px; background: #eee; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+        .pack-progress .fill { height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 2px; transition: width 0.4s; }
+        .pack-stat { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+        /* ===== 回到顶部 ===== */
+        .back-top {
+            position: fixed; bottom: 80px; right: 16px;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--primary); color: #fff; border: none;
+            font-size: 20px; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transition: all 0.3s; display: none; z-index: 50;
+        }
+        .back-top.show { display: block; }
+        .back-top:active { transform: scale(0.9); }
+
+        /* ===== 暗黑模式切换按钮 ===== */
+        .theme-toggle {
+            position: fixed; bottom: 80px; right: 70px; z-index: 50;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--card-bg); color: var(--text);
+            border: 2px solid var(--border); font-size: 20px;
+            cursor: pointer; box-shadow: var(--shadow);
+            transition: all 0.3s; display: none;
+        }
+        .theme-toggle.show { display: block; }
+        .theme-toggle:active { transform: scale(0.9); }
+
+        /* ===== 底部导航 ===== */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+            background: var(--card-bg); box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+            display: flex; padding: 6px 0 env(safe-area-inset-bottom,6px);
+            border-radius: 20px 20px 0 0;
+        }
+        .nav-item {
+            flex: 1; text-align: center; padding: 6px 0;
+            font-size: 11px; color: #999; cursor: pointer;
+            transition: all 0.2s; border: none; background: none;
+            font-family: inherit;
+        }
+        .nav-item .nav-icon { font-size: 20px; display: block; margin-bottom: 1px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item:active { transform: scale(0.92); }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: #fff; padding: 10px 24px;
+            border-radius: 30px; font-size: 14px; z-index: 200;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        /* ===== 打印样式 ===== */
+        @media print {
+            .top-bar, .bottom-nav, .back-top, .theme-toggle, .scroll-progress, .toast { display: none !important; }
+            .page { display: block !important; padding: 0; max-width: 100%; }
+            .day-body { max-height: none !important; padding: 0 16px 16px !important; }
+            .accordion-body { max-height: none !important; padding: 0 16px 14px !important; }
+            .day-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            body { padding: 0; background: #fff; color: #000; }
+            .hero-card { background: #f5f5f5 !important; color: #000 !important; }
+            .city-hero { background: #f9f9f9 !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 滚动进度条 -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 顶部 Tab -->
+    <div class="top-bar">
+        <div class="summer-badge">☀️ 八月盛夏·避暑特辑</div>
+        <h1>🏯 江浙沪·十日游</h1>
+        <div class="sub">南京 · 上海 · 杭州 | 8月盛夏出发 · 畅玩三城</div>
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-page="overview">📋 总览</button>
+            <button class="tab-btn" data-page="nj">🏯 南京</button>
+            <button class="tab-btn" data-page="sh">🌃 上海</button>
+            <button class="tab-btn" data-page="hz">🌿 杭州</button>
+            <button class="tab-btn" data-page="food">🍜 美食</button>
+            <button class="tab-btn" data-page="pack">🎒 清单</button>
+            <button class="tab-btn" data-page="budget">💰 预算</button>
+            <button class="tab-btn" data-page="tips">💡 贴士</button>
+        </div>
+    </div>
+
+    <!-- ===== 总览页 ===== -->
+    <div class="page active" id="page-overview">
+        <div class="hero-card">
+            <div class="summer-icon">☀️</div>
+            <h2>🗺️ 八月盛夏·三城避暑游</h2>
+            <div class="route">🚄 南京 3天 → 上海 3天 → 杭州 3天</div>
+            <div class="temp">🌡️ 八月均温 28-38°C · 注意防暑 · 早晚出行</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card"><div class="icon">🏯</div><div class="num nj">3天</div><div class="label">南京·六朝古都</div></div>
+            <div class="stat-card"><div class="icon">🌃</div><div class="num sh">3天</div><div class="label">上海·摩登魔都</div></div>
+            <div class="stat-card"><div class="icon">🌿</div><div class="num hz">3天</div><div class="label">杭州·人间天堂</div></div>
+            <div class="stat-card"><div class="icon">💰</div><div class="num">≈¥5,800</div><div class="label">人均预算（中档·含避暑）</div></div>
+        </div>
+
+        <div class="route-graph">
+            <h3>📍 路线示意</h3>
+            <div class="route-steps">
+                <div class="route-node" onclick="switchTab('nj')">
+                    <div class="dot nj">🏯</div>
+                    <div class="name">南京</div>
+                    <div class="days">Day 1-4</div>
+                </div>
+                <div class="route-node" style="font-size:24px;color:#ccc;flex:0;">🚄→</div>
+                <div class="route-node" onclick="switchTab('sh')">
+                    <div class="dot sh">🌃</div>
+                    <div class="name">上海</div>
+                    <div class="days">Day 4-7</div>
+                </div>
+                <div class="route-node" style="font-size:24px;color:#ccc;flex:0;">🚄→</div>
+                <div class="route-node" onclick="switchTab('hz')">
+                    <div class="dot hz">🌿</div>
+                    <div class="name">杭州</div>
+                    <div class="days">Day 7-10</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="label"><span>✅ 行程进度</span><span id="progressText">0/10 天</span></div>
+            <div class="track"><div class="fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="stat-card" onclick="switchTab('food')" style="cursor:pointer;">
+                <div class="icon">🍜</div><div class="num">40+</div><div class="label">必吃美食清单</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('pack')" style="cursor:pointer;">
+                <div class="icon">🎒</div><div class="num">30+</div><div class="label">行李清单</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('budget')" style="cursor:pointer;">
+                <div class="icon">💰</div><div class="num">¥3.5k-10k</div><div class="label">预算三档可选</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('tips')" style="cursor:pointer;">
+                <div class="icon">💡</div><div class="num">10+</div><div class="label">八月出行贴士</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 南京页 ===== -->
+    <div class="page" id="page-nj">
+        <div class="city-hero nj-bg">
+            <span class="icon">🏯</span>
+            <div class="info"><h2>南京 · 六朝古都</h2><p>Day 1 抵达 → Day 4 上午离开 | 🏨 住新街口/夫子庙</p></div>
+        </div>
+
+        <div class="accordion">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                🏨 住宿推荐 <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-body">
+                <div class="grid">
+                    <div class="item"><b>🌆 新街口商圈</b>交通最方便，地铁枢纽<span class="price"> ¥250-500/晚</span></div>
+                    <div class="item"><b>🏮 夫子庙秦淮河</b>夜景绝美，适合晚上逛吃<span class="price"> ¥300-600/晚</span></div>
+                    <div class="item"><b>🌳 玄武湖附近</b>安静景色好，近火车站<span class="price"> ¥200-400/晚</span></div>
+                    <div class="item"><b>⭐ 推荐：</b>全季/亚朵 新街口店 ¥250-400/晚</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 1 -->
+        <div class="day-card" data-day="1" data-city="nj">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-1"></div>
+                <div class="day-label"><div class="d">Day 1</div><div class="w">抵达</div></div>
+                <span class="theme">☀️ 抵达南京·秦淮夜景·纳凉</span>
+                <span class="city-tag nj">南京</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <span class="spot" onclick="toggleSpot(this)">抵达南京南站/南京站</span>
+                    <span class="spot" onclick="toggleSpot(this)">酒店入住放行李</span>
+                    <span class="spot" onclick="toggleSpot(this)">傍晚→夫子庙秦淮河夜景</span>
+                    <span class="spot" onclick="toggleSpot(this)">老门东闲逛（有空调的小店）</span>
+                    <span class="spot" onclick="toggleSpot(this)">秦淮河画舫夜游（凉快）</span>
+                </div>
+                <div class="summer-tip">🌡️ 八月南京高温，建议傍晚再出门逛</div>
+                <div class="food"><span>🍜 晚饭：南京大牌档（美龄粥、盐水鸭、烤鸭包）</span><span>🍧 糖芋苗（冰镇）</span></div>
+                <div class="cost">💰 Day1 花费：¥500（不含出发大交通）</div>
+            </div>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="day-card" data-day="2" data-city="nj">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-2"></div>
+                <div class="day-label"><div class="d">Day 2</div><div class="w">游玩</div></div>
+                <span class="theme">🏛️ 钟山风景区（树荫多）·总统府</span>
+                <span class="city-tag nj">南京</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🌲 钟山林荫道较凉快，带上水和扇子</div>
+                <span class="spot" onclick="toggleSpot(this)">中山陵（免费需预约·上午凉快）</span>
+                    <span class="spot" onclick="toggleSpot(this)">明孝陵·神道</span>
+                    <span class="spot" onclick="toggleSpot(this)">美龄宫（有空调）</span>
+                    <span class="spot" onclick="toggleSpot(this)">音乐台（喂鸽子🕊️）</span>
+                    <span class="spot" onclick="toggleSpot(this)">总统府</span>
+                    <span class="spot" onclick="toggleSpot(this)">1912街区</span>
+                </div>
+                <div class="food"><span>🥟 早饭：鸡鸣汤包</span><span>🍜 晚饭：童福兴老南京私房菜</span><span>🧊 绿豆汤解暑</span></div>
+                <div class="cost">💰 Day2 花费：门票¥150+餐饮¥150+交通¥30=约¥630</div>
+            </div>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="day-card" data-day="3" data-city="nj">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-3"></div>
+                <div class="day-label"><div class="d">Day 3</div><div class="w">游玩</div></div>
+                <span class="theme">🏮 博物院（空调）·玄武湖·美食扫街</span>
+                <span class="city-tag nj">南京</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">☀️ 中午去博物院吹空调，傍晚去玄武湖散步</div>
+                <span class="spot" onclick="toggleSpot(this)">南京博物院（提前预约！有空调）</span>
+                    <span class="spot" onclick="toggleSpot(this)">午后→酒店午休避暑</span>
+                    <span class="spot" onclick="toggleSpot(this)">傍晚→玄武湖公园（湖边凉快）</span>
+                    <span class="spot" onclick="toggleSpot(this)">明城墙（玄武门段）</span>
+                    <span class="spot" onclick="toggleSpot(this)">鸡鸣寺</span>
+                    <span class="spot" onclick="toggleSpot(this)">科巷菜场美食街</span>
+                </div>
+                <div class="food"><span>🥟 早饭：芳婆糕团店（乌饭团）</span><span>🥟 午饭：科巷牛肉锅贴+鸭血粉丝汤</span><span>🍧 冰镇赤豆元宵</span></div>
+                <div class="cost">💰 Day3 花费：门票¥50+餐饮¥120+交通¥20=约¥490</div>
+            </div>
+        </div>
+
+        <!-- Day 4 上午 -->
+        <div class="day-card" data-day="4" data-city="nj" style="border-left:3px solid #f39c12;">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-4"></div>
+                <div class="day-label"><div class="d">Day 4</div><div class="w">转场</div></div>
+                <span class="theme">🚄 南京→上海（高铁1h ¥146）</span>
+                <span class="city-tag sh">上海</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <span class="spot" onclick="toggleSpot(this)">早上再吃一顿鸭血粉丝汤</span>
+                    <div class="summer-tip">🚄 高铁空调很足，上车记得带件薄外套</div>
+                <span class="spot" onclick="toggleSpot(this)">南京南站→上海虹桥</span>
+                    <span class="spot" onclick="toggleSpot(this)">酒店入住开空调</span>
+                    <span class="spot" onclick="toggleSpot(this)">傍晚→南京路步行街</span>
+                    <span class="spot" onclick="toggleSpot(this)">南京路步行街</span>
+                    <span class="spot" onclick="toggleSpot(this)">外滩夜景+陆家嘴天际线</span>
+                    <span class="spot" onclick="toggleSpot(this)">外白渡桥</span>
+                </div>
+                <div class="food"><span>🥟 早饭：回味鸭血粉丝汤</span><span>🍜 晚饭：上海老饭店（红烧肉、八宝辣酱）</span></div>
+                <div class="cost">💰 Day4 花费：高铁¥146+晚饭¥120+住宿¥400=约¥670</div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== 上海页 ===== -->
+    <div class="page" id="page-sh">
+        <div class="city-hero sh-bg">
+            <span class="icon">🌃</span>
+            <div class="info"><h2>上海 · 摩登魔都</h2><p>Day 4 中午到达 → Day 7 上午离开 | 🏨 住南京东路/人民广场</p></div>
+        </div>
+
+        <div class="accordion">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                🏨 住宿推荐 <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-body">
+                <div class="grid">
+                    <div class="item"><b>🌆 南京东路/人民广场</b>市中心核心，步行到外滩<span class="price"> ¥350-700/晚</span></div>
+                    <div class="item"><b>🏙️ 陆家嘴</b>看三件套夜景，高端酒店多<span class="price"> ¥500-1500/晚</span></div>
+                    <div class="item"><b>🎨 静安寺/武康路</b>文艺小资，网红店多<span class="price"> ¥400-800/晚</span></div>
+                    <div class="item"><b>⭐ 推荐：</b>全季/汉庭 南京路店 ¥300-500/晚</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="4" data-city="sh" style="border-left:3px solid #f39c12;">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-4sh"></div>
+                <div class="day-label"><div class="d">Day 4</div><div class="w">下午</div></div>
+                <span class="theme">🌃 初到上海·外滩夜景（江边凉快）</span>
+                <span class="city-tag sh">上海</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🌃 外滩江风很大很凉快，夜景绝佳</div>
+                    <span class="spot" onclick="toggleSpot(this)">酒店入住</span>
+                    <span class="spot" onclick="toggleSpot(this)">傍晚→南京路步行街</span>
+                    <span class="spot" onclick="toggleSpot(this)">外滩万国建筑群</span>
+                    <span class="spot" onclick="toggleSpot(this)">陆家嘴夜景</span>
+                    <span class="spot" onclick="toggleSpot(this)">外白渡桥</span>
+                </div>
+                <div class="food"><span>🍜 晚饭：上海老饭店（红烧肉、八宝辣酱）</span><span>🍬 沈大成鲜肉月饼</span></div>
+                <div class="cost">💰 花费：住宿¥400+晚饭¥120=约¥520</div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="5" data-city="sh">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-5"></div>
+                <div class="day-label"><div class="d">Day 5</div><div class="w">游玩</div></div>
+                <span class="theme">🏙️ 陆家嘴（室内）·豫园·城隍庙</span>
+                <span class="city-tag sh">上海</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🏢 陆家嘴各大楼之间走地下通道/天桥，都有空调</div>
+                    <span class="spot" onclick="toggleSpot(this)">陆家嘴三件套（上海中心/环球/金茂）</span>
+                    <span class="spot" onclick="toggleSpot(this)">上海中心观光（¥180·室内空调）</span>
+                    <span class="spot" onclick="toggleSpot(this)">豫园+城隍庙</span>
+                    <span class="spot" onclick="toggleSpot(this)">田子坊</span>
+                </div>
+                <div class="food"><span>🥟 早饭：小杨生煎</span><span>🍜 午饭：绿波廊（蟹粉豆腐）</span><span>🍜 晚饭：兰心餐厅（红烧肉、腌笃鲜）</span><span>🧊 上海冷面</span></div>
+                <div class="cost">💰 Day5 花费：门票¥200+餐饮¥180+住宿¥400=约¥800</div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="6" data-city="sh">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-6"></div>
+                <div class="day-label"><div class="d">Day 6</div><div class="w">游玩</div></div>
+                <span class="theme">🎨 武康路·新天地·博物馆（空调）</span>
+                <span class="city-tag sh">上海</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="summer-tip">🎨 武康路梧桐树荫浓密，下午去博物馆吹空调</div>
+                <div class="spots">
+                    <span class="spot" onclick="toggleSpot(this)">武康路（武康大楼、老洋房）</span>
+                    <span class="spot" onclick="toggleSpot(this)">安福路（网红店）</span>
+                    <span class="spot" onclick="toggleSpot(this)">新天地（石库门）</span>
+                    <span class="spot" onclick="toggleSpot(this)">上海博物馆（免费需预约·空调赞）</span>
+                    <span class="spot" onclick="toggleSpot(this)">🎢 可选：迪士尼一日游（+¥475）</span>
+                </div>
+                <div class="food"><span>🥟 早饭：大壶春生煎/葱油拌面</span><span>☕ 午饭：武康路 Brunch</span><span>🍜 晚饭：光明邨（酱鸭、响油鳝糊）</span></div>
+                <div class="cost">💰 Day6 花费：门票¥50+餐饮¥180+住宿¥400=约¥630（不含迪士尼）</div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="7" data-city="sh" style="border-left:3px solid #f39c12;">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-7sh"></div>
+                <div class="day-label"><div class="d">Day 7</div><div class="w">上午</div></div>
+                <span class="theme">🚄 上海→杭州（高铁45min ¥87）</span>
+                <span class="city-tag hz">杭州</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="summer-tip">🚄 上海到杭州只要45分钟，高铁班次密集</div>
+                <div class="spots">
+                    <span class="spot" onclick="toggleSpot(this)">早上再吃碗葱油拌面</span>
+                    <span class="spot" onclick="toggleSpot(this)">上海虹桥→杭州东站</span>
+                    <span class="spot" onclick="toggleSpot(this)">酒店入住后避暑休息</span>
+                </div>
+                <div class="food"><span>🥟 早饭：弄堂小馄饨+葱油饼</span></div>
+                <div class="cost">💰 花费：高铁¥87+早饭¥20=约¥110</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 杭州页 ===== -->
+    <div class="page" id="page-hz">
+        <div class="city-hero hz-bg">
+            <span class="icon">🌿</span>
+            <div class="info"><h2>杭州 · 人间天堂</h2><p>Day 7 中午到达 → Day 10 返程 | 🏨 住龙翔桥/湖滨银泰</p></div>
+        </div>
+
+        <div class="accordion">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                🏨 住宿推荐 <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-body">
+                <div class="grid">
+                    <div class="item"><b>🌊 龙翔桥/湖滨银泰</b>西湖边，逛吃超方便<span class="price"> ¥350-700/晚</span></div>
+                    <div class="item"><b>⛰️ 满觉陇/四眼井</b>民宿聚集，安静有格调<span class="price"> ¥300-600/晚</span></div>
+                    <div class="item"><b>🏯 南宋御街/河坊街</b>古风街区，美食多<span class="price"> ¥250-500/晚</span></div>
+                    <div class="item"><b>⭐ 推荐：</b>全季/汉庭 湖滨店 ¥300-500/晚</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="7" data-city="hz" style="border-left:3px solid #f39c12;">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-7hz"></div>
+                <div class="day-label"><div class="d">Day 7</div><div class="w">下午</div></div>
+                <span class="theme">🌅 西湖·苏堤·雷峰塔（傍晚去）</span>
+                <span class="city-tag hz">杭州</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🌅 八月西湖建议傍晚4点后出行，避开正午暴晒</div>
+                    <span class="spot" onclick="toggleSpot(this)">酒店入住</span>
+                    <span class="spot" onclick="toggleSpot(this)">傍晚→西湖白堤/断桥</span>
+                    <span class="spot" onclick="toggleSpot(this)">苏堤骑行（树荫多）</span>
+                    <span class="spot" onclick="toggleSpot(this)">雷峰塔（有空调·俯瞰西湖）</span>
+                    <span class="spot" onclick="toggleSpot(this)">雷峰塔（俯瞰西湖全景）</span>
+                    <span class="spot" onclick="toggleSpot(this)">长桥公园（看日落）</span>
+                </div>
+                <div class="food"><span>🍜 晚饭：楼外楼（西湖醋鱼、东坡肉、龙井虾仁）</span></div>
+                <div class="cost">💰 花费：住宿¥400+晚饭¥120=约¥520</div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="8" data-city="hz">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-8"></div>
+                <div class="day-label"><div class="d">Day 8</div><div class="w">游玩</div></div>
+                <span class="theme">🎋 灵隐寺（山林凉快）·龙井村·九溪</span>
+                <span class="city-tag hz">杭州</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🌲 龙井村和九溪是天然避暑地，比市区低3-5°C</div>
+                    <span class="spot" onclick="toggleSpot(this)">灵隐寺+永福寺（清晨去凉快）</span>
+                    <span class="spot" onclick="toggleSpot(this)">龙井村（逛茶园·品茶）</span>
+                    <span class="spot" onclick="toggleSpot(this)">九溪十八涧（徒步玩水💧）</span>
+                    <span class="spot" onclick="toggleSpot(this)">云栖竹径</span>
+                </div>
+                <div class="food"><span>🥟 早饭：新丰小吃（虾肉小笼）</span><span>🍜 午饭：龙井村农家菜</span><span>🍜 晚饭：知味观（片儿川、定胜糕）</span></div>
+                <div class="cost">💰 Day8 花费：门票¥75+餐饮¥150+住宿¥400=约¥655</div>
+            </div>
+        </div>
+
+        <div class="day-card" data-day="9" data-city="hz">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-9"></div>
+                <div class="day-label"><div class="d">Day 9</div><div class="w">游玩</div></div>
+                <span class="theme">🏯 西溪湿地·河坊街·运河（摇橹船）</span>
+                <span class="city-tag hz">杭州</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <div class="summer-tip">🚣 西溪湿地摇橹船上有篷，不太晒，建议早上</div>
+                    <span class="spot" onclick="toggleSpot(this)">西溪湿地（摇橹船·水上凉快）</span>
+                    <span class="spot" onclick="toggleSpot(this)">河坊街+南宋御街</span>
+                    <span class="spot" onclick="toggleSpot(this)">京杭大运河（拱宸桥）</span>
+                    <span class="spot" onclick="toggleSpot(this)">小河直街</span>
+                </div>
+                <div class="food"><span>🥟 早饭：葱包烩+定胜糕</span><span>🍜 晚饭：河坊街小吃（叫花鸡、藕粉）</span><span>🧊 酸梅汤解暑</span></div>
+                <div class="cost">💰 Day9 花费：门票¥80+餐饮¥120+住宿¥400=约¥620</div>
+            </div>
+        </div>
+
+        <!-- Day 10 -->
+        <div class="day-card" data-day="10" data-city="hz">
+            <div class="day-header" onclick="toggleDay(this)">
+                <div class="day-check" onclick="event.stopPropagation();toggleCheck(this)" id="check-10"></div>
+                <div class="day-label"><div class="d">Day 10</div><div class="w">返程</div></div>
+                <span class="theme">🚄 杭州→回家</span>
+                <span class="city-tag hz">杭州</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="day-body">
+                <div class="spots">
+                    <span class="spot" onclick="toggleSpot(this)">早上再吃一碗片儿川</span>
+                    <span class="spot" onclick="toggleSpot(this)">买伴手礼（龙井茶、藕粉、定胜糕）</span>
+                    <span class="spot" onclick="toggleSpot(this)">杭州东站返程</span>
+                </div>
+                <div class="food"><span>🥟 早饭：奎元馆（虾爆鳝面）</span></div>
+                <div class="cost">💰 Day10 花费：早饭¥30+伴手礼¥200=约¥230</div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== 美食页 ===== -->
+    <div class="page" id="page-food">
+        <div class="hero-card" style="background:linear-gradient(135deg,#bf360c,#ff6f00);">
+            <h2>🍜 三城必吃美食</h2>
+            <p style="opacity:0.9;font-size:14px;">点击 ❤️ 收藏你想吃的！夏季限定标 <span style="background:#fff;color:#bf360c;padding:0 6px;border-radius:4px;">🧊</span></p>
+        </div>
+
+        <div class="food-grid">
+            <div class="food-city">
+                <div class="header nj">🏯 南京 · 必吃 12 样</div>
+                <div class="list">
+                    <div class="item"><span class="name">🥟 鸭血粉丝汤</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🦆 盐水鸭</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥟 鸡汁汤包</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥟 牛肉锅贴</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍡 赤豆元宵 <span class="tag">🧊冰镇更佳</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍚 美龄粥</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🌸 梅花糕</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍠 糖芋苗 <span class="tag">🧊冰镇版</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🦆 南京烤鸭</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍜 皮肚面</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🧊 绿豆汤 <span class="tag">☀️夏日必备</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍉 凉拌西瓜皮 <span class="tag">☀️清爽解暑</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                </div>
+            </div>
+
+            <div class="food-city">
+                <div class="header sh">🌃 上海 · 必吃 12 样</div>
+                <div class="list">
+                    <div class="item"><span class="name">🥟 生煎包</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥟 小笼包</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍜 葱油拌面</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥩 红烧肉</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🦀 蟹粉豆腐</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍖 排骨年糕</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥮 鲜肉月饼</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🌶️ 八宝辣酱</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥬 腌笃鲜</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🫓 葱油饼</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🧊 上海冷面 <span class="tag">☀️夏季限定</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🧊 刨冰/绿豆冰 <span class="tag">☀️解暑神器</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                </div>
+            </div>
+
+            <div class="food-city">
+                <div class="header hz">🌿 杭州 · 必吃 12 样</div>
+                <div class="list">
+                    <div class="item"><span class="name">🐟 西湖醋鱼</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥩 东坡肉</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🦐 龙井虾仁</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍜 片儿川</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🌮 葱包烩</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍡 定胜糕</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🐔 叫花鸡</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🥟 杭州小笼包</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🧋 西湖藕粉 <span class="tag">🧊冰镇</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🐱 猫耳朵</span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🧊 酸梅汤 <span class="tag">☀️解暑必备</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                    <div class="item"><span class="name">🍉 荷叶粉蒸肉 <span class="tag">☀️夏季时令</span></span><span class="like" onclick="toggleLike(this)">♡</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 行李清单页 ===== -->
+    <div class="page" id="page-pack">
+        <div class="hero-card" style="background:linear-gradient(135deg,#2e7d32,#66bb6a);">
+            <h2>🎒 八月出行行李清单</h2>
+            <p style="opacity:0.9;font-size:14px;">点击勾选 ✅ 收拾好就出发！</p>
+        </div>
+
+        <div class="pack-card">
+            <h3>👕 衣物篇 <span>（8月炎热，轻薄透气为主）</span></h3>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">T恤/短袖 ×5-6件</span><span class="qty">每天换洗</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">短裤/裙子 ×3-4条</span><span class="qty">透气速干</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">薄长裤 ×1-2条</span><span class="qty">防蚊虫/防晒</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">防晒衣/冰袖 🧊</span><span class="qty">八月必备</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">泳衣 🏊</span><span class="qty">酒店泳池/水上乐园</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">内衣裤 ×5-7套</span><span class="qty">速干款最佳</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">薄外套/空调衫</span><span class="qty">高铁/商场空调冷</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">舒适运动鞋/凉鞋</span><span class="qty">各一双</span>
+            </div>
+        </div>
+
+        <div class="pack-card">
+            <h3>🧴 防晒洗护篇</h3>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">防晒霜 SPF50+ 🧴</span><span class="qty">八月必带！</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">遮阳帽/墨镜 🕶️</span><span class="qty">物理防晒</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">小风扇/扇子</span><span class="qty">排队时救命</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">湿巾/纸巾</span><span class="qty">擦汗必备</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">驱蚊液/驱蚊贴 🦟</span><span class="qty">水边蚊子多</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">便携洗漱包</span><span class="qty">旅行装</span>
+            </div>
+        </div>
+
+        <div class="pack-card">
+            <h3>💊 药品/应急篇</h3>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">藿香正气水</span><span class="qty">防中暑</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">肠胃药（蒙脱石散）</span><span class="qty">水土不服</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">创可贴/碘伏棉签</span><span class="qty">小伤口</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">清凉油/风油精</span><span class="qty">提神防暑</span>
+            </div>
+        </div>
+
+        <div class="pack-card">
+            <h3>📱 电子/证件篇</h3>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">手机+充电线</span><span class="qty">别忘了！</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">充电宝 🔋</span><span class="qty">2万毫安以内</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">身份证 🆔</span><span class="qty">重中之重！</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">学生证（如有）</span><span class="qty">门票半价</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">雨伞/遮阳伞 ☂️</span><span class="qty">防晒又防雨</span>
+            </div>
+            <div class="pack-item" onclick="togglePack(this)">
+                <div class="box"></div><span class="label">水杯/保温杯</span><span class="qty">多喝水防暑</span>
+            </div>
+        </div>
+
+        <div class="pack-card" style="background:var(--card-bg);">
+            <div class="pack-progress" style="margin-bottom:8px;">
+                <div class="fill" id="packFill" style="width:0%"></div>
+            </div>
+            <div class="pack-stat" id="packStat">🎒 已收拾 0 / 0 件</div>
+        </div>
+    </div>
+
+    <!-- ===== 预算页 ===== -->
+    <div class="page" id="page-budget">
+        <div class="hero-card" style="background:linear-gradient(135deg,#1565c0,#42a5f5);">
+            <h2>💰 八月预算总览</h2>
+            <p style="opacity:0.9;font-size:14px;">暑期旺季价格上浮约10-20%</p>
+        </div>
+
+        <div class="budget-toggle">
+            <button class="active" onclick="switchBudget('mid')" id="b-mid">🎒 中档</button>
+            <button onclick="switchBudget('low')" id="b-low">🎯 省钱</button>
+            <button onclick="switchBudget('high')" id="b-high">👑 豪华</button>
+        </div>
+
+        <div class="budget-card" id="budget-mid">
+            <h3>🎒 中档版（¥5,800）</h3>
+            <div class="budget-item"><span>🚄 城际高铁（南京→上海→杭州）</span><span class="val">¥233</span></div>
+            <div class="budget-item"><span>🏨 住宿 9晚 × ¥350</span><span class="val">¥3,150</span></div>
+            <div class="budget-item"><span>🍜 餐饮 8天 × ¥150 + 零食</span><span class="val">¥1,350</span></div>
+            <div class="budget-item"><span>🎫 门票（钟山+上海中心+灵隐+西溪等）</span><span class="val">¥500</span></div>
+            <div class="budget-item"><span>🚇 市内交通（地铁+单车+打车）</span><span class="val">¥200</span></div>
+            <div class="budget-item"><span>🧊 冷饮/水（八月高温必备）</span><span class="val">¥200</span></div>
+            <div class="budget-total"><span><strong>💰 合计（不含家⇄出发地）</strong></span><span class="val"><strong>≈ ¥5,800</strong></span></div>
+        </div>
+
+        <div class="budget-card" id="budget-low" style="display:none;">
+            <h3>🎯 省钱版（¥3,700）</h3>
+            <div class="budget-item"><span>🚄 城际高铁</span><span class="val">¥233</span></div>
+            <div class="budget-item"><span>🏨 青旅/民宿 9晚 × ¥150</span><span class="val">¥1,350</span></div>
+            <div class="budget-item"><span>🍜 餐饮 小吃简餐为主</span><span class="val">¥800</span></div>
+            <div class="budget-item"><span>🎫 门票（选免费/低价景点）</span><span class="val">¥200</span></div>
+            <div class="budget-item"><span>🚇 市内交通（地铁+单车）</span><span class="val">¥150</span></div>
+            <div class="budget-item"><span>🧊 冷饮/水（八月高温必备）</span><span class="val">¥150</span></div>
+            <div class="budget-total"><span><strong>💰 合计</strong></span><span class="val"><strong>≈ ¥3,700</strong></span></div>
+        </div>
+
+        <div class="budget-card" id="budget-high" style="display:none;">
+            <h3>👑 豪华版（¥10,600+）</h3>
+            <div class="budget-item"><span>🚄 城际高铁（一等座）</span><span class="val">¥400</span></div>
+            <div class="budget-item"><span>🏨 五星/设计酒店 9晚 × ¥700</span><span class="val">¥6,300</span></div>
+            <div class="budget-item"><span>🍜 餐饮 高档餐厅+迪士尼内用餐</span><span class="val">¥2,000</span></div>
+            <div class="budget-item"><span>🎫 门票（含迪士尼¥475+）</span><span class="val">¥1,000</span></div>
+            <div class="budget-item"><span>🚇 市内交通（打车为主）</span><span class="val">¥500</span></div>
+            <div class="budget-item"><span>🧊 冷饮/水（八月高温必备）</span><span class="val">¥400</span></div>
+            <div class="budget-total"><span><strong>💰 合计</strong></span><span class="val"><strong>≈ ¥10,600+</strong></span></div>
+        </div>
+
+        <div class="budget-card" style="background:#fff8e1;">
+            <h3>📌 八月省钱小技巧</h3>
+            <div style="font-size:14px;line-height:1.8;">
+                ✅ 门票提前美团/大众点评买有折扣<br>
+                ✅ 住宿选地铁站附近而非景区核心<br>
+                ✅ 午市套餐比晚市便宜30-50%<br>
+                ✅ 共享单车月卡¥6.8 三城通用<br>
+                ✅ 🧊 自带水杯，酒店装水出门，省饮料钱<br>
+                ✅ ☀️ 尽量安排室内活动在11:00-15:00（最热时段）
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 贴士页 ===== -->
+    <div class="page" id="page-tips">
+        <div class="hero-card" style="background:linear-gradient(135deg,#e65100,#ff8f00);">
+            <h2>💡 八月出行贴士</h2>
+            <p style="opacity:0.9;font-size:14px;">盛夏出行·有备无患</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('☀️ 八月江浙沪高温35-40°C，注意防暑降温！')">
+            <div class="emoji">☀️</div>
+            <h4>八月天气概况</h4>
+            <p>八月均温28-38°C，湿度大体感更热。偶有台风和雷阵雨。建议早出门（6-10点）、午休息（12-15点）、晚活动（17点后）</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🧴 SPF50+防晒霜+冰袖+遮阳帽，三件套必备')">
+            <div class="emoji">🧴</div>
+            <h4>防暑必备三件套</h4>
+            <p>防晒霜 SPF50+ PA+++、冰袖/防晒衣、遮阳帽/墨镜。便携小风扇排队时能救命！</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('💧 每天至少喝2L水，随身带水杯')">
+            <div class="emoji">💧</div>
+            <h4>补水提醒</h4>
+            <p>高温天每天需饮水2-3L，随身带水杯。酒店出门前灌满，景区买水贵。可买电解质饮料补充盐分</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🚄 三城之间高铁超方便，随到随走')">
+            <div class="emoji">🚄</div>
+            <h4>交通建议</h4>
+            <p>南京↔上海 ¥146/约1h · 上海↔杭州 ¥87/约45min · 市内地铁+共享单车搞定。高铁空调足，带薄外套</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('📱 热门景点提前3-7天预约！')">
+            <div class="emoji">📱</div>
+            <h4>预约提醒</h4>
+            <p>暑期是旺季！南京博物院、中山陵、上海博物馆等热门景点务必提前3-7天微信小程序预约</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🎒 高铁站有寄存柜，小箱¥10-15/天')">
+            <div class="emoji">🎒</div>
+            <h4>行李策略</h4>
+            <p>跨城时轻装出行，高铁站寄存柜存行李。最后一站再买伴手礼，不用一路提着</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🎢 迪士尼暑期门票¥545+，建议买早享卡')">
+            <div class="emoji">🎢</div>
+            <h4>迪士尼选项</h4>
+            <p>想去迪士尼用Day 6全天。暑期门票¥545+，建议买早享卡提前入园。带小风扇和充足的水！</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🎁 南京→盐水鸭 / 上海→鲜肉月饼 / 杭州→龙井茶')">
+            <div class="emoji">🎁</div>
+            <h4>伴手礼推荐</h4>
+            <p>南京：盐水鸭/鸭血粉丝汤礼盒 · 上海：鲜肉月饼/雪花膏 · 杭州：龙井茶/藕粉/定胜糕（注意保鲜）</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('📱 必备：12306、高德地图、大众点评、美团')">
+            <div class="emoji">📱</div>
+            <h4>App 必备</h4>
+            <p>铁路12306（抢票）、高德地图（导航）、大众点评（找美食）、美团（订票优惠）、墨迹天气（看台风）</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🚴 西湖建议共享单车+步行，灵隐寺早上去人少')">
+            <div class="emoji">🚴</div>
+            <h4>杭州特别提醒</h4>
+            <p>西湖很大，共享单车+步行结合。灵隐寺建议早上去（凉快+人少）。九溪十八涧可以踩水！龙井村免费品茶还能蹭空调</p>
+        </div>
+
+        <div class="tip-card" onclick="showToast('🌧️ 八月台风季，提前关注天气预报')">
+            <div class="emoji">🌧️</div>
+            <h4>台风/雷雨应对</h4>
+            <p>八月是台风季，出发前关注天气预报。遇到台风天高铁可能晚点，准备备用方案。随身带伞，晴雨两用</p>
+        </div>
+    </div>
+
+    <!-- 回到顶部 -->
+    <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button>
+
+    <!-- 暗黑模式切换 -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('overview')"><span class="nav-icon">📋</span>总览</button>
+        <button class="nav-item" onclick="switchTab('nj')"><span class="nav-icon">🏯</span>南京</button>
+        <button class="nav-item" onclick="switchTab('sh')"><span class="nav-icon">🌃</span>上海</button>
+        <button class="nav-item" onclick="switchTab('hz')"><span class="nav-icon">🌿</span>杭州</button>
+        <button class="nav-item" onclick="switchTab('food')"><span class="nav-icon">🍜</span>美食</button>
+        <button class="nav-item" onclick="switchTab('pack')"><span class="nav-icon">🎒</span>清单</button>
+        <button class="nav-item" onclick="switchTab('budget')"><span class="nav-icon">💰</span>预算</button>
+    </div>
+
+    <script>
+        // ===== Tab 切换 =====
+        function switchTab(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-'+id).classList.add('active');
+            document.querySelector('.tab-btn[data-page="'+id+'"]')?.classList.add('active');
+            // 底部导航匹配
+            document.querySelectorAll('.nav-item').forEach((n,i)=>{
+                const map=['overview','nj','sh','hz','food','pack','budget'];
+                if(map[i]===id) n.classList.add('active');
+                else n.classList.remove('active');
+            });
+            // 滚动到顶部
+            window.scrollTo({top:0,behavior:'smooth'});
+            // 保存状态
+            try { localStorage.setItem('travelTab',id); } catch(e){}
+        }
+
+        // ===== Tab 按钮事件 =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchTab(this.dataset.page);
+            });
+        });
+
+        // ===== 日卡片展开/折叠 =====
+        function toggleDay(header) {
+            header.classList.toggle('open');
+            const body = header.nextElementSibling;
+            body.classList.toggle('open');
+        }
+
+        // ===== 住宿折叠 =====
+        function toggleAccordion(header) {
+            header.classList.toggle('open');
+            const body = header.nextElementSibling;
+            body.classList.toggle('open');
+        }
+
+        // ===== 勾选完成 =====
+        function toggleCheck(el) {
+            el.classList.toggle('checked');
+            el.textContent = el.classList.contains('checked') ? '✓' : '';
+            const card = el.closest('.day-card');
+            card.classList.toggle('completed');
+            updateProgress();
+        }
+
+        // ===== 景点点击打勾 =====
+        function toggleSpot(el) {
+            el.classList.toggle('done');
+        }
+
+        // ===== 美食收藏 =====
+        function toggleLike(el) {
+            if(el.textContent === '♡') {
+                el.textContent = '❤️';
+                el.classList.add('liked');
+                showToast('❤️ 已收藏！');
+            } else {
+                el.textContent = '♡';
+                el.classList.remove('liked');
+            }
+        }
+
+        // ===== 行李清单勾选 =====
+        function togglePack(el) {
+            const box = el.querySelector('.box');
+            const label = el.querySelector('.label');
+            box.classList.toggle('done');
+            label.classList.toggle('done');
+            if(box.classList.contains('done')) {
+                box.textContent = '✓';
+            } else {
+                box.textContent = '';
+            }
+            updatePackProgress();
+        }
+
+        function updatePackProgress() {
+            const items = document.querySelectorAll('.pack-item .box');
+            const total = items.length;
+            const done = document.querySelectorAll('.pack-item .box.done').length;
+            const pct = total > 0 ? Math.round(done/total*100) : 0;
+            const fill = document.getElementById('packFill');
+            const stat = document.getElementById('packStat');
+            if(fill) fill.style.width = pct+'%';
+            if(stat) stat.textContent = '🎒 已收拾 '+done+' / '+total+' 件';
+        }
+
+        // ===== 暗黑模式 =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeToggle');
+            if(html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙';
+                try { localStorage.setItem('travelTheme', 'light'); } catch(e){}
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️';
+                try { localStorage.setItem('travelTheme', 'dark'); } catch(e){}
+            }
+        }
+
+        // ===== 预算切换 =====
+        function switchBudget(level) {
+            document.querySelectorAll('.budget-card[id^="budget-"]').forEach(c => c.style.display='none');
+            document.querySelectorAll('.budget-toggle button').forEach(b => b.classList.remove('active'));
+            document.getElementById('budget-'+level).style.display='block';
+            document.getElementById('b-'+level).classList.add('active');
+        }
+
+        // ===== 进度更新 =====
+        function updateProgress() {
+            const total = 10;
+            const checked = document.querySelectorAll('.day-check.checked').length;
+            const pct = Math.round(checked/total*100);
+            document.getElementById('progressFill').style.width = pct+'%';
+            document.getElementById('progressText').textContent = '✅ '+checked+'/'+total+' 天';
+        }
+
+        // ===== Toast =====
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // ===== 回到顶部 =====
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('backTop');
+            const themeBtn = document.getElementById('themeToggle');
+            if(window.scrollY > 300) {
+                btn.classList.add('show');
+                themeBtn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+                themeBtn.classList.remove('show');
+            }
+            // 滚动进度条
+            const scrollP = document.getElementById('scrollProgress');
+            if(scrollP) {
+                const h = document.documentElement.scrollHeight - window.innerHeight;
+                const pct = h > 0 ? (window.scrollY / h * 100) : 0;
+                scrollP.style.width = pct+'%';
+            }
+        });
+
+        // ===== 触摸滑动切换 Tab =====
+        let touchStartX = 0, touchEndX = 0;
+        const tabs = ['overview','nj','sh','hz','food','pack','budget','tips'];
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if(Math.abs(diff) < 50) return;
+            const current = document.querySelector('.page.active');
+            if(!current) return;
+            const idx = tabs.indexOf(current.id.replace('page-',''));
+            if(diff > 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
+            else if(diff < 0 && idx > 0) switchTab(tabs[idx-1]);
+        });
+
+        // ===== 初始化 =====
+        (function init() {
+            // 恢复上次浏览的 tab
+            try {
+                const saved = localStorage.getItem('travelTab');
+                if(saved && document.getElementById('page-'+saved)) switchTab(saved);
+            } catch(e){}
+            // 恢复暗黑模式
+            try {
+                if(localStorage.getItem('travelTheme') === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('themeToggle').textContent = '☀️';
+                }
+            } catch(e){}
+            // 首次打开默认展开 Day 1
+            const firstDay = document.querySelector('.day-card .day-header');
+            if(firstDay) { firstDay.classList.add('open'); firstDay.nextElementSibling.classList.add('open'); }
+            // 初始化预算显示
+            document.querySelectorAll('.budget-card[id^="budget-"]').forEach(c => {
+                if(!c.id.includes('mid')) c.style.display = 'none';
+            });
+            updateProgress();
+            updatePackProgress();
+        })();
+    </script>
+</body>
+</html>
+
