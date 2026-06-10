@@ -1,0 +1,71 @@
+/*
+ * 自定义背景修正 - 安知鱼主题
+ * 
+ * 关键说明：
+ * 安知鱼 #web_bg 默认为 width:200%; height:200%; top:-50%; left:-50%; transform:rotate(-1deg)
+ * 必须用 !important 覆盖这些属性，否则图片背景无法正常 cover 整个视口
+ * 
+ * 动态背景: Canvas 绘制（红色网格 + 红色移动方块）
+ */
+
+/* 右下角帧率 */
+#bg-fps {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 999;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font: 11px/1.35 Consolas, 'Courier New', monospace;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(26, 26, 46, 0.72);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(26, 26, 46, 0.1);
+}
+
+[data-theme=dark] #bg-fps {
+  color: rgba(224, 224, 224, 0.85);
+  background: rgba(15, 10, 24, 0.82);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+/* 日间模式 */
+#web_bg {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  background: #ffffff !important;
+}
+
+/* ҹ��ģʽ */
+[data-theme=dark] #web_bg {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  background: #18181A !important;
+}
+
+/* ��ҳ��������ҳ��ǳɫģʽ���Ϸ�������͸�� */
+#page-header.full_page:not(.nav-fixed) > #nav {
+  background: var(--anzhiyu-card-bg) !important;
+}
+
+/* 深色模式文章波浪线 - 更黑 */
+[data-theme='dark'] .parallax > use {
+  fill: rgba(17,17,18,0.74) !important;
+}
+[data-theme='dark'] .parallax > use:nth-child(2) {
+  fill: rgba(17,17,18,0.51) !important;
+}
+[data-theme='dark'] .parallax > use:nth-child(3) {
+  fill: rgba(17,17,18,0.21) !important;
+}
+[data-theme='dark'] .parallax > use:nth-child(4) {
+  fill: rgba(17,17,18,1) !important;
+}
