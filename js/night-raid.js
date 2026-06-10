@@ -1,6 +1,6 @@
 /**
  * 夜间模式 · 飞机大战背景（仅宽屏 ≥1600px，窄屏纯星空）
- * 战机左侧跟随鼠标 | 怪物整队仅上下移动 | 挂载于 #web_bg，位于封面之下
+ * 战机左侧跟随鼠标 | 怪物整队仅上下移动 | 子弹独立高层
  */
 (function () {
   'use strict';
@@ -42,17 +42,22 @@
 
   const shouldRun = () => isDark() && isWideScreen();
 
-  const CANVAS_STYLE =
-    'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;';
-
   function mountCanvases() {
     if (mounted) return;
-    spriteCanvas.style.cssText = CANVAS_STYLE;
-    bulletCanvas.style.cssText = CANVAS_STYLE;
+    spriteCanvas.style.cssText =
+      'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:2;pointer-events:none;';
+    bulletCanvas.style.cssText =
+      'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:50;pointer-events:none;';
 
-    const anchor = document.getElementById('web_bg') || document.body;
-    anchor.appendChild(spriteCanvas);
-    anchor.appendChild(bulletCanvas);
+    const universe = document.getElementById('universe');
+    const anchor = universe && universe.parentNode ? universe.parentNode : document.body;
+    if (universe && universe.nextSibling) {
+      anchor.insertBefore(spriteCanvas, universe.nextSibling);
+      anchor.insertBefore(bulletCanvas, spriteCanvas.nextSibling);
+    } else {
+      anchor.appendChild(spriteCanvas);
+      anchor.appendChild(bulletCanvas);
+    }
     mounted = true;
   }
 

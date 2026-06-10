@@ -1,34 +1,16 @@
 /*
  * 自定义背景修正 - 安知鱼主题
- * 
- * 关键说明：
- * 安知鱼 #web_bg 默认为 width:200%; height:200%; top:-50%; left:-50%; transform:rotate(-1deg)
- * 必须用 !important 覆盖这些属性，否则图片背景无法正常 cover 整个视口
- * 
- * 动态背景: Canvas 绘制（红色网格 + 红色移动方块）
  */
 
-/* 右下角帧率 */
-#bg-fps {
-  position: fixed;
-  right: 12px;
-  bottom: 12px;
-  z-index: 999;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font: 11px/1.35 Consolas, 'Courier New', monospace;
-  letter-spacing: 0.04em;
-  pointer-events: none;
-  user-select: none;
-  color: rgba(26, 26, 46, 0.72);
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(26, 26, 46, 0.1);
+/* 深色模式：仅封面图高于飞机大战(z-index:2)；文章标题保持压在封面之上 */
+[data-theme=dark] #recent-posts > .recent-post-item .post_cover,
+[data-theme=dark] #page-header.post-bg #post-top-cover {
+  position: relative;
+  z-index: 3;
 }
 
-[data-theme=dark] #bg-fps {
-  color: rgba(224, 224, 224, 0.85);
-  background: rgba(15, 10, 24, 0.82);
-  border-color: rgba(168, 85, 247, 0.35);
+[data-theme=dark] #page-header.post-bg #post-info {
+  z-index: 4;
 }
 
 /* 日间模式 */
