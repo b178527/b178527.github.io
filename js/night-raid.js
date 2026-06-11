@@ -11,6 +11,10 @@
   const ALIEN_H = 32;
   const ENEMY_TOP_PAD = 0.08;
   const ENEMY_BOTTOM_PAD = 40;
+  const ENTRANCE_ROW_DELAY = 220;
+  const ENTRANCE_COL_DELAY = 35;
+  const ENTRANCE_DURATION = 580;
+  const ENTRANCE_OVERSHOOT = 160;
   const WIDE_SCREEN_MQ = window.matchMedia('(min-width: 1600px)');
 
   const spriteCanvas = document.createElement('canvas');
@@ -33,7 +37,10 @@
   let enemyVY = 1;
   let enemyFrame = 0;
   let lastStep = 0;
+  let entranceEpoch = 0;
   let mounted = false;
+
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
   const isDark = () =>
     document.documentElement.getAttribute('data-theme') === 'dark';
@@ -79,6 +86,7 @@
 
   function initEnemies() {
     enemies = [];
+    entranceEpoch = performance.now();
     const cols = 3;
     const rows = 4;
     const alienW = 36;
@@ -88,21 +96,56 @@
     const formationW = (cols - 1) * gapX + alienW;
     const startX = w - rightPad - formationW;
     const startY = h * 0.18;
+    const spawnX = w + ENTRANCE_OVERSHOOT;
     // 从左到右：紫(2) 黄(1) 红(0)，每列竖排 4 个同风格
     const colType = [2, 1, 0];
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
+        const homeX = startX + c * gapX;
+        const homeY = startY + r * gapY;
         enemies.push({
-          x: startX + c * gapX,
-          y: startY + r * gapY,
+          homeX,
+          homeY,
+          x: spawnX,
+          y: homeY,
           alive: true,
           type: colType[c],
+          row: r,
+          col: c,
+          entered: false,
         });
       }
     }
     enemyVY = 1;
     lastStep = performance.now();
+  }
+
+  function allEnemiesEntered() {
+    const alive = livingEnemies();
+    return alive.length > 0 && alive.every((e) => e.entered);
+  }
+
+  function updateEntrance(now) {
+    const spawnX = w + ENTRANCE_OVERSHOOT;
+    enemies.forEach((e) => {
+      if (!e.alive || e.entered) return;
+
+      const delay = e.row * ENTRANCE_ROW_DELAY + e.col * ENTRANCE_COL_DELAY;
+      const elapsed = now - entranceEpoch - delay;
+      if (elapsed <= 0) return;
+
+      const t = Math.min(1, elapsed / ENTRANCE_DURATION);
+      const eased = easeOutCubic(t);
+      e.x = spawnX + (e.homeX - spawnX) * eased;
+      e.y = e.homeY;
+
+      if (t >= 1) {
+        e.x = e.homeX;
+        e.y = e.homeY;
+        e.entered = true;
+      }
+    });
   }
 
   function livingEnemies() {
@@ -115,6 +158,7 @@
       initEnemies();
       return;
     }
+    if (!allEnemiesEntered()) return;
     if (now - lastStep < STEP_MS) return;
     lastStep = now;
     enemyFrame = 1 - enemyFrame;
@@ -169,21 +213,21 @@
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // 下机翼
+    // 下翼（左后掠，圆润外缘）
     ctx.fillStyle = '#5a9fd4';
     ctx.beginPath();
-    ctx.moveTo(4, 4);
-    ctx.quadraticCurveTo(18, 18, 34, 8);
-    ctx.lineTo(28, 4);
+    ctx.moveTo(18, 4);
+    ctx.quadraticCurveTo(4, 17, -6, 13);
+    ctx.lineTo(4, 4);
     ctx.closePath();
     ctx.fill();
 
-    // 上机翼
+    // 上翼（左后掠，圆润外缘）
     ctx.fillStyle = '#6eb5e8';
     ctx.beginPath();
-    ctx.moveTo(4, -4);
-    ctx.quadraticCurveTo(20, -20, 36, -8);
-    ctx.lineTo(28, -4);
+    ctx.moveTo(18, -4);
+    ctx.quadraticCurveTo(2, -19, -8, -14);
+    ctx.lineTo(2, -4);
     ctx.closePath();
     ctx.fill();
 
@@ -279,6 +323,7 @@
     player.y += (player.targetY - player.y) * 0.18;
     player.tilt = Math.max(-0.12, Math.min(0.12, (player.y - prevY) * 0.04));
 
+    updateEntrance(now);
     enemyStep(now);
 
     bullets = bullets.filter((b) => {
@@ -312,6 +357,9 @@
     sctx.clearRect(0, 0, w, h);
     drawPlane(sctx, player.x, player.y, player.tilt);
     livingEnemies().forEach((e) => {
+      if (!e.entered && performance.now() < entranceEpoch + e.row * ENTRANCE_ROW_DELAY + e.col * ENTRANCE_COL_DELAY) {
+        return;
+      }
       drawAlien(sctx, e.x, e.y, e.type, enemyFrame);
     });
   }
