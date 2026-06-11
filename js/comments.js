@@ -79,6 +79,27 @@
       .aside-list-author-name svg {
         flex-shrink: 0;
       }
+
+      .latest-comments-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-height: 346px;
+        width: 100%;
+        color: var(--anzhiyu-secondtext);
+      }
+
+      .latest-comments-loading i {
+        font-size: 2rem;
+        color: var(--anzhiyu-main);
+      }
+
+      .latest-comments-loading span {
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+      }
     `;
     document.head.appendChild(style);
   };
@@ -87,7 +108,15 @@
     API_URL: 'https://twikoo.hazysec.com',
     ADMIN_EMAIL_MD5: '85f25931c23b03f6cdbc78f83dc1f3a0a3ad53a910fb3ad2afaee7a57ddd6ad3',
     PAGE_SIZE: 5,
-    LOADING_GIF: 'https://lib.bsgun.cn/Hexo-static/img/loading.gif',
+
+    getLoadingTemplate() {
+      return `
+        <div class="latest-comments-loading">
+          <i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-spin"></i>
+          <span>正在加载评论...</span>
+        </div>
+      `;
+    },
   
     async fetchComments() {
       const controller = new AbortController();
@@ -179,7 +208,7 @@
       const container = document.getElementById("latest-comments");
       if (!container) return;
   
-      container.innerHTML = `<img src="${this.LOADING_GIF}" style="display: flex;min-height: 346px;object-fit: cover;">`;
+      container.innerHTML = this.getLoadingTemplate();
   
       const comments = await this.fetchComments();
       let content;
@@ -203,7 +232,7 @@
   };
   
   // 初始化时注入CSS并启动组件
-  ['DOMContentLoaded', 'pjax:success'].forEach(event => 
+  ['DOMContentLoaded', 'pjax:complete'].forEach(event =>
     document.addEventListener(event, () => {
       injectCSS();
       LatestComments.insertComponent();
